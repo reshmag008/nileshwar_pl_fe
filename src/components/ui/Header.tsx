@@ -14,14 +14,14 @@ const Header = () => {
   const [isLogin, setIsLogin] = useState(false)
 
   const navItems = [
-    // isLoggedIn
-    // ? { path: "/login", label: "Logout", icon: LogOut }
-    // : { path: "/login", label: "Login", icon: LogIn },
+    isLoggedIn
+    ? { path: "/login", label: "Logout", icon: LogOut }
+    : { path: "/login", label: "Login", icon: LogIn },
     { path: '/', label: 'Home', icon: Home },
     { path: '/players', label: 'Players', icon: Users },
     { path: '/register', label: 'Register', icon: UserPlus },
     { path: '/teams', label: 'Teams', icon: Group },
-    { path: '/auction-live', label: 'Live', icon: Radio },
+    // { path: '/auction-live', label: 'Live', icon: Radio },
   ];
 
   useEffect(()=>{
