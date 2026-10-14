@@ -86,202 +86,188 @@ const PlayerCard = ({ player }: PlayerCardProps) => {
   return (
     <>
       
-<div className="group relative overflow-hidden rounded-2xl border-2 border-blue-500/40 bg-[#06152f] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-yellow-400/70 hover:shadow-2xl">
+<div className="group relative overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-yellow-400 hover:shadow-2xl">
 
-  {/* Stadium Background */}
-  <div className="absolute inset-0 bg-gradient-to-br from-[#06152f] via-[#102d59] to-[#030b1b]" />
+  
+{/* Player Photo - Full Width */}
+<div className="relative w-full overflow-hidden bg-slate-100">
 
-  {/* Decorative Cricket Theme */}
-  <div className="absolute inset-0 opacity-20">
-    <div className="absolute -left-16 top-20 h-48 w-48 rounded-full bg-orange-500 blur-[90px]" />
-    <div className="absolute -right-12 top-32 h-48 w-48 rounded-full bg-blue-500 blur-[90px]" />
-    <div className="absolute bottom-20 left-1/3 h-40 w-40 rounded-full bg-red-600 blur-[90px]" />
-  </div>
+  {player.profile_image ? (
+    <img
+      src={`https://storage.googleapis.com/rajas_pl/${player.profile_image}`}
+      alt={player.fullname}
+      className="block h-auto max-h-[520px] min-h-[260px] w-full object-contain object-center transition-transform duration-300"
+    />
+  ) : (
+    <div className="flex h-72 items-center justify-center bg-slate-100">
+      <User className="h-24 w-24 text-slate-300" />
+    </div>
+  )}
 
-  {/* Player Image Section */}
-  <div className="relative h-56 overflow-hidden sm:h-72">
+  {/* Admin Payment Approval */}
+  {isLoggedIn && player.status == 1 && (
+    <div className="absolute left-2 top-2 z-20 flex max-w-[calc(100%-1rem)] items-center gap-2 rounded-xl border border-white/50 bg-slate-950/90 p-2 shadow-xl">
+      {player.payment_screenshot ? (
+        <a
+          href={`https://storage.googleapis.com/rajas_pl/${player.payment_screenshot}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="View payment screenshot"
+          className="shrink-0"
+        >
+          <img
+            src={`https://storage.googleapis.com/rajas_pl/${player.payment_screenshot}`}
+            alt="Payment Screenshot"
+            className="h-12 w-9 rounded-md border border-white/40 object-contain sm:h-14 sm:w-11"
+          />
+        </a>
+      ) : (
+        <div className="flex h-12 w-9 shrink-0 items-center justify-center rounded-md border border-dashed border-white/40 text-center text-[8px] text-white/70">
+          No Image
+        </div>
+      )}
 
-    {/* Player image */}
-    {player.profile_image ? (
-      <img
-        src={`https://storage.googleapis.com/rajas_pl/${player.profile_image}`}
-        alt={player.fullname}
-        className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-      />
-    ) : (
-      <div className="flex h-full items-center justify-center bg-gradient-to-br from-blue-950 to-slate-900">
-        <User className="h-24 w-24 text-white/30" />
-      </div>
-    )}
+      {approvingPlayerId === player.id ? (
+        <div className="flex items-center gap-2 rounded-lg bg-green-600 px-3 py-2 text-xs font-bold text-white">
+          <svg
+            className="h-4 w-4 animate-spin"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              className="opacity-25"
+            />
+            <path
+              d="M4 12a8 8 0 018-8"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
+          </svg>
+          Approving
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => handleApprove(player.id)}
+          className="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-2 text-xs font-black text-white shadow-md transition hover:bg-green-500 active:scale-95"
+        >
+          <CheckCircle className="h-4 w-4" />
+          Approve
+        </button>
+      )}
+    </div>
+  )}
 
-    {/* Image overlay */}
-    <div className="absolute inset-0 bg-gradient-to-t from-[#06152f] via-[#06152f]/20 to-black/30" />
+  {/* Bottom Image Gradient Overlay */}
+  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-slate-950 via-slate-950/75 to-transparent" />
 
-{/* Role badge */}
-    <div className="absolute right-3 top-3 -rotate-2 rounded-sm bg-yellow-400 px-3 py-1.5 shadow-lg">
-      <span className="text-xs font-black uppercase tracking-wide text-[#06152f]">
-        {player.player_role}
+  {/* Player Role, Batting Style & Bowling Style */}
+  <div className="absolute inset-x-0 bottom-0 z-10 p-3 sm:p-4">
+
+    {/* Player Role Badge */}
+    <div className="mb-3">
+      <span className="inline-flex rounded-lg border border-yellow-300/60 bg-yellow-400 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-blue-950 shadow-lg sm:text-sm">
+        {player.player_role || "Player"}
       </span>
     </div>
-    
 
-    {/* Admin Overlay */}
-    {isLoggedIn && player.status == 1 && (
-      <div className="absolute left-0 top-0 z-20 flex max-w-[calc(100%-1.5rem)] items-center gap-2 rounded-xl border border-white/20 bg-black/85 p-2 shadow-xl backdrop-blur-md">
+    {/* Batting and Bowling Details */}
+    <div className="grid grid-cols-2 gap-3 border-t border-white/25 pt-3">
 
-        {/* Payment Screenshot */}
-        {player.payment_screenshot ? (
-          <a
-            href={`https://storage.googleapis.com/rajas_pl/${player.payment_screenshot}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="View payment screenshot"
-            className="shrink-0"
-          >
-            <img
-              src={`https://storage.googleapis.com/rajas_pl/${player.payment_screenshot}`}
-              alt="Payment Screenshot"
-              className="h-14 w-10 rounded-md border border-white/40 object-cover transition-transform hover:scale-105 sm:h-16 sm:w-12"
-            />
-          </a>
-        ) : (
-          <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded-md border border-dashed border-white/40 text-center text-[9px] text-white/70">
-            No Image
-          </div>
-        )}
-
-        {/* Approve Button */}
-        {approvingPlayerId === player.id ? (
-          <div className="flex items-center gap-2 rounded-lg bg-green-600 px-3 py-2 text-xs font-bold text-white">
-            <svg
-              className="h-4 w-4 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                className="opacity-25"
-              />
-              <path
-                d="M4 12a8 8 0 018-8"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-            </svg>
-            <span>Approving</span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => handleApprove(player.id)}
-            className="flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-2 text-xs font-black text-white shadow-lg transition-all hover:bg-green-500 active:scale-95"
-          >
-            <CheckCircle className="h-4 w-4" />
-            Approve
-          </button>
-        )}
+      {/* Batting Style */}
+      <div className="min-w-0">
+        <div className="mb-1 flex items-center gap-1.5 text-yellow-400">
+          <Crosshair className="h-4 w-4 shrink-0" />
+          <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
+            Batting Style
+          </span>
+        </div>
+        <p className="break-words text-sm font-extrabold leading-tight text-white sm:text-base">
+          {player.batting_style || "N/A"}
+        </p>
       </div>
-    )}
-    
+
+      {/* Bowling Style */}
+      <div className="min-w-0">
+        <div className="mb-1 flex items-center gap-1.5 text-yellow-400">
+          <Target className="h-4 w-4 shrink-0" />
+          <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
+            Bowling Style
+          </span>
+        </div>
+        <p className="break-words text-sm font-extrabold leading-tight text-white sm:text-base">
+          {player.bowling_style &&
+          player.bowling_style !== "None"
+            ? player.bowling_style
+            : "N/A"}
+        </p>
+      </div>
+
+    </div>
   </div>
+</div>
+
 
   {/* Player Details */}
-  <div className="relative space-y-3 p-4 sm:p-5">
+  <div className="space-y-5 bg-white p-4 sm:p-6">
 
-     <h3 className="mt-2 truncate text-center text-base font-bold text-white">
-  {player.fullname.toUpperCase()}
-</h3>
+    {/* Player Name */}
+    <h3 className="break-words text-2xl font-black uppercase tracking-tight text-blue-950 sm:text-3xl">
+      {player.id}. {player.fullname}
+    </h3>
 
-    <div className="grid grid-cols-2 gap-3 text-sm text-white/90">
-
+    {/* Player Information */}
    
 
+<div className="grid grid-cols-2 gap-2">
+
   {/* Location */}
-  <div className="flex min-w-0 items-center gap-2">
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-500/20">
-      <MapPin className="h-4 w-4 text-yellow-400" />
+  <div className="flex min-w-0 items-start gap-2 rounded-xl bg-blue-50 p-2.5">
+    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white">
+      <MapPin className="h-4 w-4" />
     </div>
-    <span className="truncate font-medium" title={player.location}>
-      {player.location || "N/A"}
-    </span>
+
+    <div className="min-w-0 flex-1">
+      <p className="text-[10px] font-semibold text-slate-500 sm:text-xs">
+        Location
+      </p>
+      <p
+        className="break-words text-xs font-bold leading-5 text-blue-950 sm:text-sm"
+        title={player.location || "N/A"}
+      >
+        {player.location || "N/A"}
+      </p>
+    </div>
   </div>
 
   {/* Contact Number */}
-  <div className="flex min-w-0 items-center gap-2">
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500/20">
-      <Phone className="h-4 w-4 text-green-400" />
+  <div className="flex min-w-0 items-start gap-2 rounded-xl bg-blue-50 p-2.5">
+    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-600 text-white">
+      <Phone className="h-4 w-4" />
     </div>
-    <span className="truncate font-medium" title={String(player.contact_no || "")}>
-      {player.contact_no || "N/A"}
-    </span>
+
+    <div className="min-w-0 flex-1">
+      <p className="text-[10px] font-semibold text-slate-500 sm:text-xs">
+        Contact Number
+      </p>
+      <p
+        className="break-all text-xs font-bold leading-5 text-blue-950 sm:text-sm"
+        title={String(player.contact_no || "N/A")}
+      >
+        {player.contact_no || "N/A"}
+      </p>
+    </div>
   </div>
-</div>
-
-   {/* Batting & Bowling Style */}
-<div className="grid grid-cols-2 gap-3 text-sm text-white/90">
-
-  {/* Batting Style */}
-  {player.batting_style ? (
-    <div className="flex min-w-0 items-center gap-2">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-500/20">
-        <Crosshair className="h-4 w-4 text-red-400" />
-      </div>
-      <span className="truncate font-medium" title={player.batting_style}>
-        {player.batting_style}
-      </span>
-    </div>
-  ) : (
-    <div />
-  )}
-
-  {/* Bowling Style */}
-  {player.bowling_style && player.bowling_style !== "None" ? (
-    <div className="flex min-w-0 items-center gap-2">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-500/20">
-        <Target className="h-4 w-4 text-green-400" />
-      </div>
-      <span className="truncate font-medium" title={player.bowling_style}>
-        {player.bowling_style}
-      </span>
-    </div>
-  ) : (
-    <div />
-  )}
 
 </div>
-    {/* Footer Status */}
-    {/* <div className="border-t border-white/15 pt-3">
-      {player.status == 2 ? (
-        <div className="flex items-center gap-2 rounded-lg border border-green-400/20 bg-green-500/10 px-3 py-2">
-          <CheckCircle className="h-5 w-5 shrink-0 text-green-400" />
-          <div>
-            <p className="text-sm font-bold text-green-400">
-              Approved
-            </p>
-            <p className="text-xs text-green-100/70">
-              Payment verified
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 rounded-lg border border-yellow-400/20 bg-yellow-500/10 px-3 py-2">
-          <Clock className="h-5 w-5 shrink-0 text-yellow-400" />
-          <div>
-            <p className="text-sm font-bold text-yellow-400">
-              Registration Pending
-            </p>
-            <p className="text-xs text-white/60">
-              Awaiting approval
-            </p>
-          </div>
-        </div>
-      )}
-    </div> */}
+
+
 
   </div>
 </div>
