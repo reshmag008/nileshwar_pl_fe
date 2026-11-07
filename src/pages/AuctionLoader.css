@@ -1,0 +1,583 @@
+* {
+  box-sizing: border-box;
+}
+
+.auction-loader {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(20, 72, 150, 0.35),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #020817 0%,
+      #061637 55%,
+      #020713 100%
+    );
+
+  color: white;
+  font-family: Inter, Arial, sans-serif;
+}
+
+/* --------------------------------
+   Main content
+-------------------------------- */
+
+.loader-content {
+  position: relative;
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  animation: contentFade 1s ease-out;
+}
+
+.loader-content h1 {
+  margin: 35px 0 8px;
+
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 700;
+  letter-spacing: -1px;
+
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.loader-content h1 span {
+  color: #ffbd3b;
+
+  text-shadow:
+    0 0 10px rgba(255, 189, 59, 0.5),
+    0 0 30px rgba(255, 189, 59, 0.25);
+}
+
+.loader-content p {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  font-size: clamp(14px, 1.5vw, 20px);
+  letter-spacing: 0.3px;
+}
+
+/* --------------------------------
+   Auction Ring
+-------------------------------- */
+
+.auction-ring {
+  position: relative;
+
+  width: 300px;
+  height: 300px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  animation: ringFloat 3s ease-in-out infinite;
+}
+
+/* Outer rotating rings */
+
+.ring {
+  position: absolute;
+
+  width: 260px;
+  height: 260px;
+
+  border-radius: 50%;
+
+  transform: rotate(-30deg);
+}
+
+.ring-blue {
+  border: 8px solid transparent;
+
+  border-top-color: #1685ff;
+  border-left-color: #1685ff;
+  border-bottom-color: #00b8ff;
+
+  filter:
+    drop-shadow(0 0 8px #1685ff)
+    drop-shadow(0 0 25px rgba(0, 130, 255, 0.5));
+
+  animation: rotateRing 3s linear infinite;
+}
+
+.ring-gold {
+  width: 230px;
+  height: 230px;
+
+  border: 7px solid transparent;
+
+  border-right-color: #ffc247;
+  border-top-color: #ffd56a;
+
+  filter:
+    drop-shadow(0 0 8px #ffc247)
+    drop-shadow(0 0 20px rgba(255, 190, 50, 0.4));
+
+  animation: rotateRingReverse 2.5s linear infinite;
+}
+
+/* --------------------------------
+   Gavel
+-------------------------------- */
+
+.gavel {
+  position: absolute;
+
+  width: 150px;
+  height: 110px;
+
+  transform:
+    rotate(-28deg)
+    translateY(-5px);
+
+  animation: gavelBounce 1.8s ease-in-out infinite;
+
+  filter:
+    drop-shadow(0 8px 8px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 15px rgba(255, 166, 50, 0.25));
+}
+
+.gavel-head {
+  position: absolute;
+
+  left: 0;
+  top: 25px;
+
+  width: 82px;
+  height: 48px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #7d492d,
+      #4b2417 55%,
+      #28120e
+    );
+
+  box-shadow:
+    inset 0 3px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.5);
+}
+
+.gavel-head::before,
+.gavel-head::after {
+  content: "";
+
+  position: absolute;
+
+  top: -5px;
+
+  width: 18px;
+  height: 58px;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #6a3926,
+      #a7633d,
+      #482016
+    );
+}
+
+.gavel-head::before {
+  left: -12px;
+}
+
+.gavel-head::after {
+  right: -12px;
+}
+
+.gavel-band {
+  position: absolute;
+
+  left: 32px;
+  top: 0;
+
+  width: 12px;
+  height: 48px;
+
+  background: #d4933b;
+
+  box-shadow:
+    0 0 8px rgba(255, 190, 60, 0.35);
+}
+
+.gavel-handle {
+  position: absolute;
+
+  left: 70px;
+  top: 40px;
+
+  width: 92px;
+  height: 18px;
+
+  border-radius: 12px;
+
+  transform: rotate(5deg);
+
+  background:
+    linear-gradient(
+      180deg,
+      #8c5636,
+      #4d281b
+    );
+}
+
+/* --------------------------------
+   Cricket Ball
+-------------------------------- */
+
+.cricket-ball {
+  position: absolute;
+
+  right: 20px;
+  bottom: 30px;
+
+  width: 70px;
+  height: 70px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      #ff6565,
+      #d71920 45%,
+      #8e0008 100%
+    );
+
+  box-shadow:
+    inset -10px -12px 15px rgba(0, 0, 0, 0.35),
+    inset 5px 5px 10px rgba(255, 255, 255, 0.15),
+    0 8px 15px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(220, 20, 30, 0.35);
+
+  animation: ballFloat 2s ease-in-out infinite;
+}
+
+.ball-seam {
+  position: absolute;
+
+  width: 90px;
+  height: 26px;
+
+  left: -10px;
+  top: 23px;
+
+  border-top: 3px dashed rgba(255, 255, 255, 0.9);
+  border-bottom: 3px dashed rgba(255, 255, 255, 0.9);
+
+  border-radius: 50%;
+
+  transform: rotate(-25deg);
+}
+
+/* --------------------------------
+   Loading dots
+-------------------------------- */
+
+.loading-dots {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 32px;
+}
+
+.loading-dots span {
+  width: 13px;
+  height: 13px;
+
+  border-radius: 50%;
+
+  background: #1685ff;
+
+  box-shadow:
+    0 0 10px #1685ff,
+    0 0 20px rgba(22, 133, 255, 0.6);
+
+  animation: dotPulse 1.2s infinite ease-in-out;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.loading-dots span:nth-child(4) {
+  background: #5e8ecf;
+  animation-delay: 0.45s;
+}
+
+.loading-dots span:nth-child(5) {
+  background: #ffc247;
+
+  box-shadow:
+    0 0 10px #ffc247,
+    0 0 20px rgba(255, 194, 71, 0.6);
+
+  animation-delay: 0.6s;
+}
+
+/* --------------------------------
+   Stadium Lights
+-------------------------------- */
+
+.stadium-lights {
+  position: absolute;
+
+  top: 80px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 12px);
+  gap: 7px;
+
+  opacity: 0.8;
+
+  filter:
+    drop-shadow(0 0 8px #328dff)
+    drop-shadow(0 0 20px rgba(50, 141, 255, 0.6));
+}
+
+.stadium-lights.left {
+  left: 8%;
+  transform: rotate(-12deg);
+}
+
+.stadium-lights.right {
+  right: 8%;
+  transform: rotate(12deg);
+}
+
+.stadium-lights span {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+
+  background: #9ecbff;
+
+  animation: lightBlink 2s infinite alternate;
+}
+
+.stadium-lights span:nth-child(2n) {
+  animation-delay: 0.5s;
+}
+
+/* --------------------------------
+   Stadium Glow
+-------------------------------- */
+
+.stadium-glow {
+  position: absolute;
+
+  width: 350px;
+  height: 350px;
+
+  border-radius: 50%;
+
+  filter: blur(70px);
+
+  opacity: 0.18;
+}
+
+.glow-left {
+  left: -100px;
+  top: 10%;
+
+  background: #0066ff;
+}
+
+.glow-right {
+  right: -100px;
+  top: 20%;
+
+  background: #0066ff;
+}
+
+/* --------------------------------
+   Stadium Floor
+-------------------------------- */
+
+.stadium-floor {
+  position: absolute;
+
+  left: -10%;
+  bottom: -30%;
+
+  width: 120%;
+  height: 45%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(24, 100, 180, 0.3),
+      rgba(0, 0, 0, 0.9) 65%
+    );
+
+  border-top:
+    1px solid rgba(70, 140, 220, 0.2);
+
+  box-shadow:
+    0 -20px 80px rgba(20, 100, 200, 0.12);
+
+  transform:
+    perspective(400px)
+    rotateX(50deg);
+}
+
+/* --------------------------------
+   Animations
+-------------------------------- */
+
+@keyframes rotateRing {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateRingReverse {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ringFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes gavelBounce {
+  0%,
+  100% {
+    transform:
+      rotate(-28deg)
+      translateY(-5px);
+  }
+
+  50% {
+    transform:
+      rotate(-22deg)
+      translateY(-12px);
+  }
+}
+
+@keyframes ballFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(8deg);
+  }
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    transform: scale(0.65);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes lightBlink {
+  from {
+    opacity: 0.45;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes contentFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* --------------------------------
+   Mobile
+-------------------------------- */
+
+@media (max-width: 600px) {
+  .auction-ring {
+    width: 230px;
+    height: 230px;
+  }
+
+  .ring {
+    width: 200px;
+    height: 200px;
+  }
+
+  .ring-gold {
+    width: 175px;
+    height: 175px;
+  }
+
+  .stadium-lights {
+    transform: scale(0.7);
+  }
+
+  .stadium-lights.left {
+    left: 2%;
+  }
+
+  .stadium-lights.right {
+    right: 2%;
+  }
+
+  .loader-content h1 {
+    margin-top: 25px;
+  }
+}

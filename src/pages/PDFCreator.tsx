@@ -29,139 +29,333 @@ const PDFCreator: React.FC<props> = ({playerList,teamName}) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  const generatePDF = async () => {
-    setIsLoading(true);
-    const pdf = new jsPDF();
-    const pageWidth = pdf.internal.pageSize.width;
-    const pageHeight = pdf.internal.pageSize.height;
-    const margin = 2; // Margin for all sides
-    const contentWidth = pageWidth - margin * 4.6;
-    const contentHeight = pageHeight - margin * 60;
-    let pageNumber = 1;
+const generatePDF = async () => {
+  setIsLoading(true);
 
-    for (const player of playerList) {
-        // Fetch the profile image and convert it to base64 if needed
-        const profileImageUrl = `https://storage.googleapis.com/rajas_pl/${player.profile_image}`;
-        // <img key={index} src={BACKEND_URL + '/player_images/' + player.profile_image} alt="logo" style={profileImageStyle}/> */}
-        const profileImageBase64 = await fetch(profileImageUrl)
-            .then((res) => res.blob())
-            .then((blob) => new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            }));
+  const pdf = new jsPDF("p", "mm", "a4");
 
-        // Create a temporary div to render each player's content
-        const tempDiv = document.createElement("div");
-        tempDiv.style.width = `${contentWidth * 3}px`; // Increase width for higher-res canvas
-        tempDiv.style.height = `${contentHeight * 5}px`; // Increase height for higher-res canvas
-        tempDiv.style.marginTop = '0px';
-        tempDiv.style.display = 'flex';
-        tempDiv.style.justifyContent = 'center';
-        tempDiv.style.alignItems = 'center';
-        tempDiv.style.backgroundColor = 'white';
-        tempDiv.style.overflow = "hidden";
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-        // Set card styles and content
-        tempDiv.innerHTML = `
-            <div style="
-                border: 1px solid #ccc; 
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-                border-radius: 8px;
-                width: 100%; 
-                height: 100%;
-                background-image: url(${playerBg});
-                background-size: cover;
-                background-position: center;
-                backgroundRepeat: "no-repeat",
-                
-                ">
+  const margin = 8;
 
+  const loadImage = async (url) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Image loading failed");
 
+      const blob = await response.blob();
 
-                <div style="display:flex">
-                    <img src="${profileImageBase64}" alt="Player Image" style="height: 21rem; width: 13.7rem; margin-left: 28px; object-fit: cover; margin-top: 380px; border-radius:13px;
-                    mask-composite: intersect;" />
-                </div>
+      return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error(error);
+      return "";
+    }
+  };
 
-                <div style="text-align:left;">
-                    <p style="margin-top:-105px; margin-left:300px; font-size: 40px; color: black; font-weight:bold;">${player.id}</p>
-                </div>
+  const escapeHtml = (value) =>
+    String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    })[char]);
 
-                <div style="text-align:center;width:250px">
-                    <p style="margin-top:50px;margin-left:2px; font-size: 21px; color:black; font-weight:bold;">${player.fullname.toUpperCase()}</p>
-                </div>
+  try {
+    for (let index = 0; index < playerList.length; index++) {
+      const player = playerList[index];
 
+      const profileImage = await loadImage(
+        `https://storage.googleapis.com/rajas_pl/${player.profile_image}`
+      );
 
-                <div style="text-align:left">
-                    <p style="margin-top:13px; font-size: 21px; color:black; font-weight:bold;padding-left:310px;">${player.player_role}</p>
-                </div>
+      const cardWidth = 900;
+      const cardHeight = 1100;
 
-                
-               <div style="text-align:left">
-                    <p style="margin-top:-9px; font-size: 21px; color:black; font-weight:bold;padding-left:310px;">${player.batting_style}</p>
-                </div>
+      const tempDiv = document.createElement("div");
 
-                
-                <div style="text-align:left">
-                    <p style="margin-top:-11px; font-size: 21px; color:black; font-weight:bold;padding-left:310px;">${player.bowling_style}</p>
-                </div>
+      tempDiv.style.cssText = `
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: ${cardWidth}px;
+  height: ${cardHeight}px;
+  background: #f1f5f9;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  border: 3px solid #0f766e;
+  border-radius: 24px;
+`;
 
-                
-                <div style="text-align:left">
-                    <p style="margin-top:-12px; font-size: 21px; color:black; font-weight:bold;padding-left:310px;">${capitalizeFirst(player.location)}</p>
-                </div>
+     tempDiv.innerHTML = `
+  <div style="
+    position:relative;
+    width:100%;
+    height:100%;
+    background:linear-gradient(180deg,#f8fafc 0%,#ffffff 65%,#ecfdf5 100%);
+  ">
 
-                <div style="text-align:left">
-                    <p style="margin-top:-10px; font-size: 21px; color:black; font-weight:bold;margin-left:310px;">${player.contact_no}</p>
-                </div>
+    <!-- Header -->
+    <div style="
+      height:100px;
+      background:linear-gradient(120deg,#0f172a,#134e4a);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      color:white;
+    ">
+      <div style="
+        font-size:30px;
+        font-weight:900;
+        letter-spacing:4px;
+      ">NILESHWAR PREMIER LEAGUE SEASON 11</div>
 
-                 
+     
 
-                ${player.bid_amount ? `
-                <div style="text-align:left";>
-                    <img
-                        src="${soldImg}"
-                        alt="${player.fullname}"
-                        style="width:120px; height:120px; object-fit:cover;margin-left:480px;margin-top:-150px;"
-                    />
+    <!-- Player Image -->
+    <div style="
+      position:absolute;
+      top:130px;
+      left:50%;
+      transform:translateX(-50%);
+      width:430px;
+      height:510px;
+      padding:10px;
+      background:white;
+      border:5px solid #10b981;
+      border-radius:24px;
+      box-shadow:0 10px 25px rgba(15,23,42,0.15);
+      box-sizing:border-box;
+    ">
+      ${
+        profileImage
+          ? `<img src="${profileImage}" style="
+              width:100%;
+              height:100%;
+              object-fit:cover;
+              border-radius:14px;
+            "/>`
+          : `<div style="
+              display:flex;
+              height:100%;
+              align-items:center;
+              justify-content:center;
+              color:#64748b;
+            ">No Profile Image</div>`
+      }
+    </div>
 
-                    <p style="margin-top:-60px; margin-left:523px; font-size:12px; color:black; font-weight:bold;">
-                        ${player.bid_amount}
-                    </p>
-                </div>
-                ` : ""}
+    <!-- SOLD Badge -->
+    ${
+      player.bid_amount
+        ? `
+          <div style="
+            position:absolute;
+            top:210px;
+            right:35px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:8px;
+            background:#052e16;
+            border:3px solid #34d399;
+            padding:14px 20px;
+            border-radius:16px;
+            box-shadow:0 5px 15px rgba(0,0,0,0.2);
+          ">
+            <span style="
+              color:#86efac;
+              font-size:23px;
+              font-weight:900;
+              letter-spacing:2px;
+            ">SOLD</span>
 
-                
-            </div>
-        `;
-        
-
-        document.body.appendChild(tempDiv);
-
-        // Capture the temporary content as an image
-        const canvas = await html2canvas(tempDiv, { scale: 1.2, useCORS: true,allowTaint: false, }); // Scale for better quality
-        const imgData = canvas.toDataURL('image/jpeg', 0.7);
-        const imgWidth = contentWidth; // Width to fit within margins
-        const imgHeight = (canvas.height * imgWidth) / canvas.width; // Preserve aspect ratio
-
-        // Add the captured image to the PDF within margins
-        if (pageNumber > 1) pdf.addPage();
-        pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
-
-        // Optional: Add footer with page number
-        pdf.setFontSize(10);
-        pdf.setTextColor(150);
-        // pdf.text(`Page ${pageNumber}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-        pageNumber++;
-
-        // Remove the temporary div
-        document.body.removeChild(tempDiv);
+            <span style="
+              color:#facc15;
+              font-size:24px;
+              font-weight:900;
+            ">₹${escapeHtml(player.bid_amount)}</span>
+          </div>
+        `
+        : ""
     }
 
-    // Save the PDF
-    pdf.save(teamName ? teamName+'.pdf' : "All Kerala SN Players.pdf");
-    setIsLoading(false)
+    <!-- Player ID -->
+    <div style="
+  position:absolute;
+  top:650px;
+  left:50%;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:790px;
+  box-sizing:border-box;
+  background:#064e3b;
+  color:white;
+  padding:12px 35px;
+  border-radius:30px;
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:2px;
+  border:3px solid #6ee7b7;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+">
+  #${escapeHtml(player.id)}. ${escapeHtml(player.fullname?.toUpperCase())}
+</div>
+
+    <!-- Divider -->
+    <div style="
+      position:absolute;
+      top:875px;
+      left:15%;
+      width:70%;
+      height:4px;
+      background:#10b981;
+      border-radius:10px;
+    "></div>
+
+    <!-- Player Details - Two Column Layout -->
+<div style="
+  position:absolute;
+  top:740px;
+  left:55px;
+  right:55px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+">
+
+  ${[
+    ["ROLE", player.player_role],
+    ["BATTING STYLE", player.batting_style],
+    ["BOWLING STYLE", player.bowling_style],
+    ["LOCATION", capitalizeFirst(player.location || "")],
+    ["PHONE NUMBER", player.contact_no]
+  ].map(([label, value]) => `
+    <div style="
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-height:90px;
+      background:#ffffff;
+      border:1px solid #d1fae5;
+      border-left:7px solid #059669;
+      border-radius:12px;
+      padding:15px 20px;
+      box-sizing:border-box;
+      box-shadow:0 3px 8px rgba(15,23,42,0.06);
+    ">
+
+      <span style="
+        color:#047857;
+        font-size:20px;
+        font-weight:900;
+        letter-spacing:1px;
+        margin-bottom:7px;
+      ">
+        ${escapeHtml(label)}
+      </span>
+
+      <span style="
+        color:#0f172a;
+        font-size:25px;
+        font-weight:bold;
+        overflow-wrap:anywhere;
+      ">
+        ${escapeHtml(value || "-")}
+      </span>
+
+    </div>
+  `).join("")}
+
+</div>
+
+    <!-- Pending Status -->
+    ${
+      player.status == 1
+        ? `
+          <div style="
+            position:absolute;
+            bottom:15px;
+            right:25px;
+            background:#fef3c7;
+            color:#92400e;
+            border:2px solid #f59e0b;
+            padding:8px 20px;
+            border-radius:20px;
+            font-size:17px;
+            font-weight:bold;
+          ">PAYMENT PENDING</div>
+        `
+        : ""
+    }
+
+   
+
+  </div>
+`;
+
+      document.body.appendChild(tempDiv);
+
+      const canvas = await html2canvas(tempDiv, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+      const availableWidth = pageWidth - margin * 2;
+      const availableHeight = pageHeight - margin * 2;
+
+      const ratio = Math.min(
+        availableWidth / canvas.width,
+        availableHeight / canvas.height
+      );
+
+      const imgWidth = canvas.width * ratio;
+      const imgHeight = canvas.height * ratio;
+
+      const x = (pageWidth - imgWidth) / 2;
+      const y = (pageHeight - imgHeight) / 2;
+
+      if (index > 0) {
+        pdf.addPage();
+      }
+
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        x,
+        y,
+        imgWidth,
+        imgHeight
+      );
+
+      document.body.removeChild(tempDiv);
+    }
+
+    pdf.save(
+      teamName
+        ? `${teamName}.pdf`
+        : "Nileshwar Premier League Season 11.pdf"
+    );
+
+  } catch (error) {
+    console.error("PDF generation error:", error);
+  } finally {
+    setIsLoading(false);
+  }
 };
 
  

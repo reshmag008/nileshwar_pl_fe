@@ -14,6 +14,8 @@ import CelebrationPopup from "./celebrationPopup";
 import PlayerService from "@/service/PlayerService";
 import { Trophy, Users, UserX } from "lucide-react";
 import bklogo from '../assets/bk_logo.jpeg'
+import AuctionLoader from "./AuctionLoader";
+import AuctionBreakScreen from "./AuctionBreakScreen"
 
 const PlayerDisplay: React.FC = () => {
   const [socket, setSocket] = useState<any>(null);
@@ -32,6 +34,8 @@ const PlayerDisplay: React.FC = () => {
 
   const isMobile = window.matchMedia("(max-width: 600px)").matches;
   const [player, setPlayer] = useState<any | null>(null);
+
+  const [openIsPaused, setOpenIsPaused] = useState(false);
   
 
 
@@ -48,6 +52,16 @@ useEffect(() => {
       setOpenPopUp(false);
       setPopUpContent(null);
     }
+
+    let is_paused = localStorage.getItem('is_paused');
+    console.log("is_paused= ", is_paused)
+    if(is_paused == 'true'){
+      setOpenIsPaused(true)
+    }else{
+      setOpenIsPaused(false);
+    }
+
+
     if(teamComp?.id) {
       setOpenPopUp(true);
       setPopUpContent(teamComp);
@@ -138,6 +152,10 @@ useEffect(() => {
       className="h-screen bg-slate-950 text-white flex flex-col overflow-hidden"
     >
 
+      {openIsPaused && 
+        <AuctionBreakScreen/>
+      }
+
       {openPopUp && 
       <CelebrationPopup
           open={openPopUp}
@@ -217,6 +235,14 @@ useEffect(() => {
     {/* ===================================================== */}
     {/* PLAYER PROFILE */}
     {/* ===================================================== */}
+
+    {!currentBidPlayer?.id ? (
+
+      <AuctionLoader />
+
+
+      
+    ):(
 
     <section
       className="
@@ -547,6 +573,8 @@ useEffect(() => {
       </div>
 
     </section>
+
+                  )}
 
 
     {/* ===================================================== */}
