@@ -225,6 +225,7 @@ localStorage.setItem("is_paused", String(isPaused));
 
     const sellPlayer = () => {
     setIsLoading(true);
+    localStorage.setItem("selectedPlayer", JSON.stringify({}));
     if (currentBidTeam && currentBidTeam.id) {
       let params = {
         id: currentBidPlayer.id,
